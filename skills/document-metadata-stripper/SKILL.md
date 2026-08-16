@@ -22,17 +22,17 @@ Requires Python 3. Office formats work with the standard library alone. PDF need
 
 Strip (writes `<name>_clean.<ext>` next to the original):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\document-metadata-stripper\scripts\strip_document_metadata.py" "path\to\file.docx"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/document-metadata-stripper/scripts/strip_document_metadata.py" "path/to/file.docx"
 ```
 
 Check only (scans and reports, writes nothing):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\document-metadata-stripper\scripts\strip_document_metadata.py" --check "path\to\file.docx"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/document-metadata-stripper/scripts/strip_document_metadata.py" --check "path/to/file.docx"
 ```
 
-macOS/Linux: `python ~/.claude/skills/document-metadata-stripper/scripts/strip_document_metadata.py <file>`.
+`${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
 ## What it does
 

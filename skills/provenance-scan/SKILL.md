@@ -20,11 +20,11 @@ Companion to `image-watermark-stripper` and `document-metadata-stripper`: this i
 
 Requires Python 3 (standard library only - no dependencies).
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\provenance-scan\scripts\provenance_scan.py" "path\to\folder"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/provenance-scan/scripts/provenance_scan.py" "path/to/folder"
 ```
 
-macOS/Linux: `python ~/.claude/skills/provenance-scan/scripts/provenance_scan.py <path>`.
+`${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
 Pass any mix of files and directories; directories are walked recursively. Add `--json` for machine-readable output (a `{scanned, flagged, files:[{file, markers, flagged}]}` object) suitable for CI artifacts or gating.
 

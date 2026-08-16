@@ -7,10 +7,11 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+SKILLS = ROOT / "skills"
 
 
 def load(rel):
-    path = ROOT / rel
+    path = SKILLS / rel
     spec = importlib.util.spec_from_file_location(path.stem, path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

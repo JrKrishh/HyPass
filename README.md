@@ -36,21 +36,36 @@ Keeps commits and PRs attributed only to the GitHub account holder: no `Co-Autho
 
 ## Install
 
-Windows (PowerShell):
+### One step, in Claude Code (recommended)
 
-```powershell
-git clone https://github.com/JrKrishh/HyPass.git "$env:TEMP\HyPass"
-powershell -ExecutionPolicy Bypass -File "$env:TEMP\HyPass\install.ps1"
+HyPass is packaged as a Claude Code plugin, so all skills install together. In Claude Code, run:
+
+```
+/plugin marketplace add JrKrishh/HyPass
+/plugin install hypass@hypass
 ```
 
-macOS/Linux:
+The first line registers this repo as a marketplace (once per machine); the second installs the `hypass` plugin with every skill. That's it — the skills are available immediately.
+
+The stripper scripts need Python 3 and a couple of libraries: `pip install Pillow pikepdf` (images and PDFs). Audio/video stripping needs `ffmpeg` on PATH.
+
+### Manual install (no plugin)
+
+Clone and run the installer, which copies each skill into `~/.claude/skills/`:
 
 ```bash
+# macOS/Linux
 git clone https://github.com/JrKrishh/HyPass.git /tmp/HyPass
 bash /tmp/HyPass/install.sh
 ```
 
-The installer copies every skill directory into `~/.claude/skills/`. Restart Claude Code to load them. The stripper scripts need Python 3; install their dependencies with `pip install -r requirements.txt` (Pillow for images, pikepdf for PDFs).
+```powershell
+# Windows (PowerShell)
+git clone https://github.com/JrKrishh/HyPass.git "$env:TEMP\HyPass"
+powershell -ExecutionPolicy Bypass -File "$env:TEMP\HyPass\install.ps1"
+```
+
+Restart Claude Code to load them. Python deps as above (`pip install -r requirements.txt`).
 
 ## Remove Claude git/PR attribution (one-time)
 
