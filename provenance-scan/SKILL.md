@@ -26,7 +26,15 @@ python "$env:USERPROFILE\.claude\skills\provenance-scan\scripts\provenance_scan.
 
 macOS/Linux: `python ~/.claude/skills/provenance-scan/scripts/provenance_scan.py <path>`.
 
-Pass any mix of files and directories; directories are walked recursively.
+Pass any mix of files and directories; directories are walked recursively. Add `--json` for machine-readable output (a `{scanned, flagged, files:[{file, markers, flagged}]}` object) suitable for CI artifacts or gating.
+
+### As a git pre-commit hook
+
+`hooks/pre-commit` scans staged files and blocks the commit if any carry provenance markers (bypass with `git commit --no-verify`). Install it with:
+
+```bash
+cp provenance-scan/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
 
 ## What it does
 

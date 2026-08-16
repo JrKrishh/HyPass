@@ -72,22 +72,33 @@ def iter_paths(args):
 
 
 def main(argv):
-    if not argv:
-        print("usage: provenance_scan.py <path> [path ...]")
+    as_json = False
+    args = []
+    for a in argv:
+        if a == "--json":
+            as_json = True
+        else:
+            args.append(a)
+    if not args:
+        print("usage: provenance_scan.py [--json] <path> [path ...]")
         return 2
-    scanned = 0
+    results = []
     flagged = 0
-    for path in iter_paths(argv):
+    for path in iter_paths(args):
         markers = scan_file(path)
         if markers is None:
             continue  # unsupported type
-        scanned += 1
-        if markers:
-            flagged += 1
-            print(f"FLAGGED {path}: {markers}")
-        else:
-            print(f"clean    {path}")
-    print(f"\nScanned {scanned} file(s); {flagged} carry provenance markers.")
+        is_flagged = bool(markers)
+        flagged += is_flagged
+        results.append({"file": str(path), "markers": markers, "flagged": is_flagged})
+        if not as_json:
+            print(f"{'FLAGGED' if is_flagged else 'clean   '} {path}: {markers}" if is_flagged
+                  else f"clean    {path}")
+    if as_json:
+        import json
+        print(json.dumps({"scanned": len(results), "flagged": flagged, "files": results}, indent=2))
+    else:
+        print(f"\nScanned {len(results)} file(s); {flagged} carry provenance markers.")
     return 1 if flagged else 0
 
 
