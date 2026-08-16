@@ -3,7 +3,8 @@ $dest = Join-Path $env:USERPROFILE ".claude\skills"
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
 Get-ChildItem -Directory $root | ForEach-Object {
-    if ($_.Name -eq ".git") { return }
+    # Only install skill directories (those with a SKILL.md); skip tests, .git, etc.
+    if (-not (Test-Path (Join-Path $_.FullName "SKILL.md"))) { return }
     $target = Join-Path $dest $_.Name
     Remove-Item -Recurse -Force $target -ErrorAction SilentlyContinue
     Copy-Item -Recurse -Force $_.FullName $target

@@ -16,19 +16,29 @@ Removes machine-readable provenance metadata from images. Claude marks files (.p
 
 ## How to run
 
+Requires Python 3 with Pillow: `pip install Pillow` (or `pip install -r requirements.txt` from the repo root).
+
 Strip (writes `<name>_clean.<ext>` next to the original):
 
 ```powershell
 python "$env:USERPROFILE\.claude\skills\image-watermark-stripper\scripts\strip_metadata.py" "path\to\image.png"
 ```
 
-The script prints the provenance markers found before and after (C2PA, JUMBF, XMP, Anthropic, etc.).
+Check only (scans and reports, writes nothing):
+
+```powershell
+python "$env:USERPROFILE\.claude\skills\image-watermark-stripper\scripts\strip_metadata.py" --check "path\to\image.png"
+```
+
+macOS/Linux: `python ~/.claude/skills/image-watermark-stripper/scripts/strip_metadata.py <image>`.
+
+The script prints the provenance markers found before and after. The scan is a token heuristic covering C2PA/JUMBF/XMP and Claude/Anthropic markers; EXIF and IPTC are stripped but not individually reported by the scan.
 
 ## What it does
 
 1. Byte-scans the file for provenance markers
 2. Re-encodes the image with Pillow, clearing the metadata dictionary (drops EXIF, XMP, IPTC, C2PA/JUMBF, PNG tEXt/iTXt/zTXt chunks)
-3. Keeps the ICC color profile (color correctness; carries no provenance)
+3. Keeps the ICC color profile for JPEG/PNG/WebP (color correctness; carries no provenance)
 4. SVG: removes `<metadata>` blocks and XML comments
 5. Re-scans the output to verify markers are gone
 

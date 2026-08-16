@@ -4,12 +4,10 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image
-
 MARKERS = [
     b"C2PA", b"c2pa", b"JUMBF", b"jumbf",
     b"Anthropic", b"anthropic", b"Made with Claude", b"made with claude",
-    b"XMP", b"xmp", b"Adobe", b"adobe",
+    b"XMP", b"xmp",
 ]
 
 SVG_METADATA_RE = re.compile(r"<metadata\b[^>]*>.*?</metadata>", re.S | re.I)
@@ -29,6 +27,7 @@ def strip_svg(src, out):
 
 
 def strip_raster(src, out):
+    from PIL import Image  # imported lazily: SVG and --check work without Pillow
     with Image.open(src) as im:
         im.load()
         fmt = im.format
@@ -38,22 +37,32 @@ def strip_raster(src, out):
         kwargs = {}
         if fmt == "JPEG":
             kwargs["quality"] = 95
-        if icc and fmt in ("JPEG", "PNG"):
+        if icc and fmt in ("JPEG", "PNG", "WEBP"):
             kwargs["icc_profile"] = icc
         dst.save(out, format=fmt, **kwargs)
 
 
 def main(argv):
-    if not argv:
-        print("usage: strip_metadata.py <image> [image ...]")
+    check_only = False
+    args = []
+    for a in argv:
+        if a in ("--check", "-c"):
+            check_only = True
+        else:
+            args.append(a)
+    if not args:
+        print("usage: strip_metadata.py [--check] <image> [image ...]")
         return 1
-    for arg in argv:
+    for arg in args:
         src = Path(arg)
         if not src.is_file():
             print(f"SKIP {arg}: not found")
             continue
-        out = src.with_name(f"{src.stem}_clean{src.suffix}")
         before = scan(src)
+        if check_only:
+            print(f"{src.name}: markers={before or 'none'} (check only)")
+            continue
+        out = src.with_name(f"{src.stem}_clean{src.suffix}")
         if src.suffix.lower() == ".svg":
             strip_svg(src, out)
         else:

@@ -14,18 +14,35 @@ Strips AI provenance metadata (C2PA content credentials, EXIF, XMP, IPTC, PNG te
 
 Strips authoring/provenance metadata (creator, company, application, custom properties, "Made with Claude"/Anthropic tags) from Office documents (`.docx`/`.pptx`/`.xlsx` and their macro/template variants) and PDFs, without touching the document body. Office formats run on the Python standard library; PDF support needs `pikepdf` or `pypdf`. Supports a `--check` scan-only mode.
 
+### provenance-scan
+
+Read-only auditor. Walks files and folders and reports which images, documents, and PDFs carry Claude/C2PA provenance markers, without modifying anything. Exit code `1` if any file is flagged, so it works as a pre-publish or CI gate. Standard library only. This is the detect side to the strippers' remove side.
+
+### text-watermark
+
+Guidance (no script) for the invisible SynthID-style watermark Claude weaves into generated **text** - which no metadata stripper can remove. Explains why the file tools don't touch it and gives a human-rewrite checklist for degrading it.
+
 ### git-human-commits
 
 Keeps commits and PRs attributed only to the GitHub account holder: no `Co-Authored-By: Claude` trailers, no "🤖 Generated with Claude Code" footer, no Claude-Session link, and human-style commit/PR text. Includes flag-and-verify commands for auditing history.
 
 ## Install
 
+Windows (PowerShell):
+
 ```powershell
 git clone https://github.com/JrKrishh/claude-skills.git "$env:TEMP\claude-skills"
 powershell -ExecutionPolicy Bypass -File "$env:TEMP\claude-skills\install.ps1"
 ```
 
-`install.ps1` copies both skills into `%USERPROFILE%\.claude\skills\`. Restart Claude Code to load them.
+macOS/Linux:
+
+```bash
+git clone https://github.com/JrKrishh/claude-skills.git /tmp/claude-skills
+bash /tmp/claude-skills/install.sh
+```
+
+The installer copies every skill directory into `~/.claude/skills/`. Restart Claude Code to load them. The stripper scripts need Python 3; install their dependencies with `pip install -r requirements.txt` (Pillow for images, pikepdf for PDFs).
 
 ## Remove Claude git/PR attribution (one-time)
 
