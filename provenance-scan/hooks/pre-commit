@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# pre-commit hook: block committing files that carry AI provenance markers.
+#
+# Install (either one):
+#   cp provenance-scan/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#   # or point a shared hooks dir at it: git config core.hooksPath <dir containing this file>
+#
+# Bypass a single commit with:  git commit --no-verify
+set -euo pipefail
+
+scan="$HOME/.claude/skills/provenance-scan/scripts/provenance_scan.py"
+if [ ! -f "$scan" ]; then
+    scan="$(git rev-parse --show-toplevel)/provenance-scan/scripts/provenance_scan.py"
+fi
+
+# Only added/copied/modified staged files.
+mapfile -t files < <(git diff --cached --name-only --diff-filter=ACM)
+[ ${#files[@]} -eq 0 ] && exit 0
+
+if python3 "$scan" "${files[@]}"; then
+    exit 0  # scan exit 0 -> nothing flagged
+fi
+
+echo
+echo "pre-commit: the files above carry provenance markers."
+echo "Strip them first (strip-all / image-watermark-stripper / document-metadata-stripper)"
+echo "or bypass this commit with: git commit --no-verify"
+exit 1
