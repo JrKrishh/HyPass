@@ -205,6 +205,29 @@ class StripAllTests(unittest.TestCase):
             self.assertTrue((Path(d) / "s_clean.docx").is_file())  # routed + cleaned
 
 
+class MediaStripperTests(unittest.TestCase):
+    def test_ffmpeg_strip_removes_tags(self):
+        import shutil
+        import subprocess
+        import tempfile
+        if not (shutil.which("ffmpeg") and shutil.which("ffprobe")):
+            self.skipTest("ffmpeg/ffprobe not installed")
+        mod = load("media-metadata-stripper/scripts/strip_media_metadata.py")
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "clip.flac"  # FLAC encoder is native to ffmpeg
+            subprocess.run(
+                ["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=8000:cl=mono",
+                 "-t", "0.2", "-metadata", "title=Made with Claude",
+                 "-metadata", "artist=Anthropic", str(src)],
+                capture_output=True, check=True,
+            )
+            self.assertTrue(mod.scan(src))  # provenance tags present before
+            out = Path(d) / "clip_clean.flac"
+            mod.strip(src, out)
+            self.assertTrue(out.is_file())
+            self.assertEqual(mod.scan(out), [])  # tags gone after
+
+
 class ImageStripperTests(unittest.TestCase):
     def test_png_text_chunk_removed(self):
         try:
