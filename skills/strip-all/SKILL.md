@@ -30,6 +30,8 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/strip-all/scripts/strip_all.py" --check "pa
 
 `${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
+Add `--deep` to also remove hidden document content (tracked changes, comments, revision history, PDF annotations/attachments) — it is forwarded to `document-metadata-stripper` and ignored for other file types.
+
 ## What it does
 
 1. Walks the given files/folders (directories recursively)
