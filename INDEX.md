@@ -1,12 +1,14 @@
 # Skills Index
 
-Catalog of skills in this repository. Each skill lives in its own directory with a `SKILL.md` (name + description frontmatter) that Claude Code loads on demand.
+Catalog of skills in this repository. Each skill lives in its own directory with a `SKILL.md` (name, description, and license frontmatter) that Claude Code loads on demand.
 
 | Skill | Purpose | Trigger when | Files |
 |-------|---------|--------------|-------|
 | [document-metadata-stripper](document-metadata-stripper/SKILL.md) | Strip authoring/provenance metadata from Office documents (.docx/.pptx/.xlsx + variants) and PDFs. | Removing author/company/Claude tags from a document, or checking whether one carries provenance metadata. | `SKILL.md`, `scripts/strip_document_metadata.py` |
 | [git-human-commits](git-human-commits/SKILL.md) | Keep commits and PRs attributed only to the account holder (JrKrishh), with human-style messages and no Claude/AI attribution trailers or footers. | Making a commit, opening a PR, or auditing git history for AI attribution. | `SKILL.md` |
 | [image-watermark-stripper](image-watermark-stripper/SKILL.md) | Strip AI provenance metadata (C2PA, EXIF, XMP, IPTC, PNG text chunks, SVG metadata) from image files. | Removing watermarks/AI tags/metadata from images, or checking whether an image carries provenance tags. | `SKILL.md`, `scripts/strip_metadata.py` |
+| [provenance-scan](provenance-scan/SKILL.md) | Read-only audit of files/folders for Claude/C2PA provenance markers across images, documents, and PDFs. | Checking which files in a project carry provenance before publishing; no modification. | `SKILL.md`, `scripts/provenance_scan.py` |
+| [text-watermark](text-watermark/SKILL.md) | Explain and handle the invisible text watermark no stripper can remove, with a human-rewrite checklist. | Asked to remove the SynthID/text watermark, or why the file strippers don't touch text. | `SKILL.md` |
 
 ## Details
 
@@ -29,7 +31,19 @@ Catalog of skills in this repository. Each skill lives in its own directory with
 - **Description:** Strip AI provenance metadata (C2PA content credentials, EXIF, XMP, IPTC, PNG text chunks, SVG metadata) from image files.
 - **Entry point:** `scripts/strip_metadata.py <image>` — writes `<name>_clean.<ext>` and reports provenance markers found before/after.
 - **Formats:** PNG/JPEG/WebP/GIF/BMP/TIFF via Pillow; SVG via metadata/comment removal. HEIC/AVIF need extra Pillow plugins.
+- **Modes:** `--check` scans and reports without writing.
+
+### provenance-scan
+- **Directory:** `provenance-scan/`
+- **License:** MIT
+- **Description:** Read-only auditor that reports which files carry Claude/C2PA provenance markers. The detect side to the strippers' remove side.
+- **Entry point:** `scripts/provenance_scan.py <path> [path ...]` — walks files/dirs, prints `FLAGGED`/`clean` per file; exit `1` if any flagged (CI/pre-publish gate). Stdlib only.
+
+### text-watermark
+- **Directory:** `text-watermark/`
+- **License:** MIT
+- **Description:** Guidance (no script) on the SynthID-style text watermark that no metadata stripper removes, plus a human-rewrite checklist for degrading it.
 
 ## Install
 
-See [README.md](README.md). `install.ps1` copies every skill directory into `%USERPROFILE%\.claude\skills\`; restart Claude Code to load them.
+See [README.md](README.md). `install.ps1` (Windows) and `install.sh` (macOS/Linux) copy every skill directory into `~/.claude/skills/`; restart Claude Code to load them. Python deps for the stripper scripts: `pip install -r requirements.txt`.
