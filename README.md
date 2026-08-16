@@ -1,10 +1,6 @@
 <div align="center">
 
-<img src="assets/icon.svg" width="116" alt="HyPass logo" />
-
-# HyPass
-
-**Strip AI provenance metadata from your files.**
+<img src="assets/banner.svg" width="760" alt="HyPass — Strip AI provenance metadata from your files" />
 
 [![Tests](https://github.com/JrKrishh/HyPass/actions/workflows/test.yml/badge.svg)](https://github.com/JrKrishh/HyPass/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-3FB950.svg)](LICENSE)

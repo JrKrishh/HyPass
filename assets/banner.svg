@@ -1,0 +1,21 @@
+<svg width="1024" height="320" viewBox="0 0 1024 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HyPass — Strip AI provenance metadata from your files">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="320" rx="28" fill="url(#bg)"/>
+
+  <!-- shield mark (reused from the app icon), placed left -->
+  <g transform="translate(48,32)">
+    <path d="M128 44 L196 70 V132 C196 174 166 204 128 216 C90 204 60 174 60 132 V70 Z" fill="#FFFFFF"/>
+    <path d="M114 138 L120 150 L132 156 L120 162 L114 174 L108 162 L96 156 L108 150 Z" fill="#4F46E5"/>
+    <path d="M140 112 L144 120 L152 124 L144 128 L140 136 L136 128 L128 124 L136 120 Z" fill="#6366F1"/>
+    <path d="M162 93 L164.5 97.5 L169 100 L164.5 102.5 L162 107 L159.5 102.5 L155 100 L159.5 97.5 Z" fill="#A5B4FC"/>
+  </g>
+
+  <!-- wordmark + tagline -->
+  <text x="300" y="176" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="96" font-weight="800" fill="#FFFFFF" letter-spacing="-1">HyPass</text>
+  <text x="304" y="224" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" font-weight="500" fill="#FFFFFF" fill-opacity="0.9">Strip AI provenance metadata from your files.</text>
+</svg>
