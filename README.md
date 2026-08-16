@@ -1,64 +1,33 @@
+<div align="center">
+
+<img src="assets/icon.svg" width="116" alt="HyPass logo" />
+
 # HyPass
 
-Personal Claude Code skills for clean, human-owned output.
+**Strip AI provenance metadata from your files.**
 
-## Skills
+[![Tests](https://github.com/JrKrishh/HyPass/actions/workflows/test.yml/badge.svg)](https://github.com/JrKrishh/HyPass/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-3FB950.svg)](LICENSE)
+![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-8A63D2)
+![Skills](https://img.shields.io/badge/skills-7-06B6D4)
 
-See [INDEX.md](INDEX.md) for the full catalog with per-skill details.
+</div>
 
-### image-watermark-stripper
-
-Strips AI provenance metadata (C2PA content credentials, EXIF, XMP, IPTC, PNG text chunks, SVG metadata) from image files. Claude marks `.png`/`.jpg`/`.svg` with signed C2PA credentials (Anthropic, Aug 2026 - EU AI Act). Runs `strip_metadata.py`, writes `<name>_clean.<ext>`, and reports provenance markers found before/after.
-
-### document-metadata-stripper
-
-Strips authoring/provenance metadata (creator, company, application, custom properties, "Made with Claude"/Anthropic tags) from Office documents (`.docx`/`.pptx`/`.xlsx` and their macro/template variants) and PDFs, without touching the document body. Office formats run on the Python standard library; PDF support needs `pikepdf` or `pypdf`. Supports a `--check` scan-only mode, and a `--deep` mode that also removes hidden content — Word tracked changes, comments, revision IDs, hidden text, and embedded OLE objects; PDF annotations, attachments, JavaScript, and prior revision history.
-
-### media-metadata-stripper
-
-Strips container and stream metadata from audio/video (`.mp3`/`.mp4`/`.mov`/`.wav` and more) by remuxing with ffmpeg - streams are copied, so there's no re-encode or quality loss, only tags dropped. Needs ffmpeg on PATH. Supports a `--check` scan-only mode.
-
-### strip-all
-
-Dispatcher: point it at a folder or a mixed set of files and it auto-detects each file's type and runs the matching stripper (image, document, or media). The write-side companion to `provenance-scan`. Reuses the other skills as subprocesses, so there's a single source of truth per format.
-
-### provenance-scan
-
-Read-only auditor. Walks files and folders and reports which images, documents, and PDFs carry Claude/C2PA provenance markers, without modifying anything. Exit code `1` if any file is flagged, so it works as a pre-publish or CI gate; `--json` gives machine-readable output, and `hooks/pre-commit` blocks committing flagged files. Standard library only. This is the detect side to the strippers' remove side.
-
-### text-watermark
-
-Guidance (no script) for the invisible SynthID-style watermark Claude weaves into generated **text** - which no metadata stripper can remove. Explains why the file tools don't touch it and gives a human-rewrite checklist for degrading it.
-
-### git-human-commits
-
-Keeps commits and PRs attributed only to the GitHub account holder: no `Co-Authored-By: Claude` trailers, no "🤖 Generated with Claude Code" footer, no Claude-Session link, and human-style commit/PR text. Includes flag-and-verify commands for auditing history.
-
-## Scan vs strip
-
-Two different operations, easy to confuse:
-
-- **Strip** (`image-watermark-stripper`, `document-metadata-stripper`, `media-metadata-stripper`, `strip-all`) **removes** metadata — and it clears the fields regardless of what's in them. Stripping a document empties author, company, application, timestamps, and custom properties whether or not they mention Claude; the document body is left untouched.
-- **Scan** (`provenance-scan`, and the `--check` flag on the strippers) only **reports** — it looks specifically for AI *provenance* markers (C2PA, JUMBF, Claude, Anthropic) and writes nothing.
-
-So a scan reporting "no markers" means no Claude/C2PA provenance was found — not that the file has no metadata. A strip still clears that metadata. Use scan to audit before publishing; use strip to actually clean.
+HyPass is a suite of Claude Code skills for clean, human-owned output. It removes machine-readable provenance — C2PA content credentials, EXIF/XMP, Office and PDF metadata, audio/video tags — and keeps your git history human. It also tells you, honestly, what it **can't** remove.
 
 ## Install
 
-### One step, in Claude Code (recommended)
-
-HyPass is packaged as a Claude Code plugin, so all skills install together. In Claude Code, run:
+### One step, in Claude Code
 
 ```
 /plugin marketplace add JrKrishh/HyPass
 /plugin install hypass@hypass
 ```
 
-The first line registers this repo as a marketplace (once per machine); the second installs the `hypass` plugin with every skill. That's it — the skills are available immediately.
+The first line registers this repo as a marketplace (once per machine); the second installs the `hypass` plugin with **all seven skills**. Dependencies for the stripper scripts: `pip install Pillow pikepdf`, plus `ffmpeg` on PATH for audio/video.
 
-The stripper scripts need Python 3 and a couple of libraries: `pip install Pillow pikepdf` (images and PDFs). Audio/video stripping needs `ffmpeg` on PATH.
-
-### Manual install (no plugin)
+<details>
+<summary><b>Manual install (no plugin)</b></summary>
 
 Clone and run the installer, which copies each skill into `~/.claude/skills/`:
 
@@ -74,7 +43,50 @@ git clone https://github.com/JrKrishh/HyPass.git "$env:TEMP\HyPass"
 powershell -ExecutionPolicy Bypass -File "$env:TEMP\HyPass\install.ps1"
 ```
 
-Restart Claude Code to load them. Python deps as above (`pip install -r requirements.txt`).
+Restart Claude Code to load them. Python deps: `pip install -r requirements.txt`.
+</details>
+
+## Skills
+
+|  | Skill | What it does |
+|:--:|---|---|
+| 🖼️ | **image-watermark-stripper** | Strips C2PA, EXIF, XMP, IPTC, and PNG text chunks from images. `--check` scans only. |
+| 📄 | **document-metadata-stripper** | Clears author/company/app metadata from Office docs and PDFs. `--deep` also removes tracked changes, comments, hidden text, and OLE objects. |
+| 🎞️ | **media-metadata-stripper** | Drops tags from audio/video with ffmpeg — no re-encode, no quality loss. |
+| 🧹 | **strip-all** | Auto-detects file type and routes each file to the right stripper. Clean a whole folder in one command. |
+| 🔎 | **provenance-scan** | Read-only auditor: reports which files carry provenance. `--json` + a pre-commit hook for CI gates. |
+| ✍️ | **git-human-commits** | Keeps commits and PRs human-authored — no AI trailers or "Generated with" footers. |
+| 🫥 | **text-watermark** | Explains the SynthID-style text watermark **no tool can strip**, with a human-rewrite checklist. |
+
+See [INDEX.md](INDEX.md) for per-skill detail.
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[Your files] --> B{provenance-scan}
+    B -->|clean| P[safe to publish]
+    B -->|flagged| C[strip-all]
+    C --> D[image-watermark-stripper]
+    C --> E[document-metadata-stripper]
+    C --> F[media-metadata-stripper]
+    D --> G[*_clean files]
+    E --> G
+    F --> G
+```
+
+## Scan vs strip
+
+Two different operations, easy to confuse:
+
+- **Strip** *removes* metadata — and clears the fields regardless of contents (author, company, timestamps, custom properties), leaving the document body untouched.
+- **Scan** (`provenance-scan`, and the `--check` flag) only *reports* — it looks specifically for AI provenance markers (C2PA, JUMBF, Claude, Anthropic) and writes nothing.
+
+A scan reporting "no markers" means no Claude/C2PA provenance was found — **not** that the file has no metadata. A strip still clears that metadata. Use scan to audit before publishing; use strip to actually clean.
+
+## The honest limit
+
+HyPass removes **metadata**. The **SynthID-style watermark woven into Claude's text** is not metadata — it's a statistical bias in word choice, so no stripper can remove it. Only a genuine human rewrite degrades it. See the [`text-watermark`](skills/text-watermark/SKILL.md) skill for how it's embedded and what actually weakens it.
 
 ## Remove Claude git/PR attribution (one-time)
 
@@ -90,6 +102,10 @@ This removes the `Co-Authored-By: Claude` commit trailer, the "Generated with Cl
 
 ## Notes
 
-- C2PA metadata stripping is permanent - the credential cannot be recovered once stripped
-- Attribution removal is cosmetic: Claude text still carries Anthropic's invisible SynthID text watermark, which only a human rewrite degrades
-- Skills are personal-use tools for your own generated content
+- C2PA metadata stripping is permanent — the credential cannot be recovered once stripped.
+- Attribution removal is cosmetic: Claude text still carries the invisible SynthID text watermark, which only a human rewrite degrades.
+- Skills are personal-use tools for your own generated content.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for running the test suite, commit style, and optional verified-commit signing.

@@ -1,0 +1,15 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HyPass">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="60" fill="url(#bg)"/>
+  <!-- privacy shield -->
+  <path d="M128 44 L196 70 V132 C196 174 166 204 128 216 C90 204 60 174 60 132 V70 Z" fill="#FFFFFF"/>
+  <!-- AI sparkles being stripped away, fading up the diagonal -->
+  <path d="M114 138 L120 150 L132 156 L120 162 L114 174 L108 162 L96 156 L108 150 Z" fill="#4F46E5"/>
+  <path d="M140 112 L144 120 L152 124 L144 128 L140 136 L136 128 L128 124 L136 120 Z" fill="#6366F1"/>
+  <path d="M162 93 L164.5 97.5 L169 100 L164.5 102.5 L162 107 L159.5 102.5 L155 100 L159.5 97.5 Z" fill="#A5B4FC"/>
+</svg>
