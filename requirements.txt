@@ -1,0 +1,5 @@
+# image-watermark-stripper
+Pillow>=10.0.0
+
+# document-metadata-stripper (PDF support; Office formats need no dependency)
+pikepdf>=8.0.0
