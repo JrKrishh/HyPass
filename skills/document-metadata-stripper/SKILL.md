@@ -34,16 +34,31 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/document-metadata-stripper/scripts/strip_do
 
 `${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
+### Deep clean (`--deep`)
+
+Add `--deep` to also remove hidden content the default pass leaves behind:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/document-metadata-stripper/scripts/strip_document_metadata.py" --deep "path/to/file.docx"
+```
+
+- **Word:** accepts tracked insertions (keeps the text), drops tracked deletions (removes the text), strips revision records and comments, and removes revision-save IDs (RSIDs).
+- **PDF:** removes annotations, embedded file attachments, JavaScript/auto-run actions, and rewrites the file so prior incremental-revision history is discarded.
+
+`--deep` changes document content (it finalizes tracked changes), so it is opt-in; the default pass touches metadata only.
+
 ## What it does
 
 1. Scans the metadata parts (not the body) for provenance tokens (Claude, Anthropic, "Made with Claude", C2PA)
 2. Office: blanks `dc:creator`, `cp:lastModifiedBy`, title/subject/description/keywords, `Company`, `Manager`, `Application`, `AppVersion` in core/app props, and drops all custom `<property>` entries - then rewrites the package with the rest of its parts byte-for-byte
 3. PDF: clears the `/Info` dictionary and removes the XMP `/Metadata` stream
 4. Re-scans the output to confirm the markers are gone
+5. With `--deep`: additionally removes tracked changes, comments, and RSIDs (Word) or annotations, attachments, JavaScript, and revision history (PDF)
 
 ## Limitations
 
-- Office handled with stdlib; PDF needs pikepdf or pypdf installed (without one, PDFs are reported and skipped, not silently passed)
+- Office handled with stdlib; PDF needs pikepdf or pypdf installed (without one, PDFs are reported and skipped, not silently passed). `--deep` PDF cleaning needs pikepdf for the full set (annotations/attachments/JS); pypdf handles annotations only
 - The scan is a token heuristic over the metadata parts (C2PA/Claude/Anthropic), not a full metadata dump - use a viewer for an exhaustive audit
-- Only metadata is removed; text watermarks woven into the document's prose are unaffected and only degrade with a genuine human rewrite
+- Only metadata is removed by default; text watermarks woven into the document's prose are unaffected and only degrade with a genuine human rewrite
+- `--deep` Word cleaning targets tracked changes/comments/RSIDs; it does not remove hidden text (`w:vanish`) or embedded OLE objects
 - Handled: `.docx/.docm/.dotx/.dotm`, `.xlsx/.xlsm/.xltx/.xltm`, `.pptx/.pptm/.potx/.potm`, `.pdf`. Legacy `.doc/.xls/.ppt` are not supported

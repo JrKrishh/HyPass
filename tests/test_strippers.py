@@ -55,6 +55,61 @@ class DocumentStripperTests(unittest.TestCase):
                                  {"docProps/core.xml", "docProps/app.xml"})
 
 
+def make_docx_with_revisions(path):
+    W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    document = (
+        '<?xml version="1.0"?>'
+        f'<w:document xmlns:w="{W}"><w:body>'
+        '<w:p w:rsidR="00AB12CD">'
+        '<w:r><w:t>Kept. </w:t></w:r>'
+        '<w:ins w:id="1" w:author="R"><w:r><w:t>INS_KEEP</w:t></w:r></w:ins>'
+        '<w:del w:id="2"><w:r><w:delText>DEL_SECRET</w:delText></w:r></w:del>'
+        '<w:commentRangeStart w:id="0"/><w:commentRangeEnd w:id="0"/>'
+        '<w:r><w:commentReference w:id="0"/></w:r>'
+        '</w:p></w:body></w:document>'
+    ).encode()
+    comments = (f'<?xml version="1.0"?><w:comments xmlns:w="{W}">'
+                '<w:comment w:id="0"><w:p><w:r><w:t>SECRET_NOTE</w:t></w:r></w:p></w:comment></w:comments>').encode()
+    settings = (f'<?xml version="1.0"?><w:settings xmlns:w="{W}">'
+                '<w:rsids><w:rsid w:val="00AB12CD"/></w:rsids></w:settings>').encode()
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", b"<Types/>")
+        z.writestr("word/document.xml", document)
+        z.writestr("word/comments.xml", comments)
+        z.writestr("word/settings.xml", settings)
+
+
+class DeepCleanTests(unittest.TestCase):
+    def setUp(self):
+        self.doc = load("document-metadata-stripper/scripts/strip_document_metadata.py")
+
+    def test_default_keeps_revisions_deep_removes_them(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "r.docx"
+            make_docx_with_revisions(src)
+
+            # Default strip: deep content remains.
+            shallow = Path(d) / "shallow.docx"
+            self.doc.strip_office(src, shallow, deep=False)
+            with zipfile.ZipFile(shallow) as z:
+                self.assertIn(b"DEL_SECRET", z.read("word/document.xml"))
+                self.assertIn(b"SECRET_NOTE", z.read("word/comments.xml"))
+
+            # Deep strip: revisions/comments/rsids gone, insertion accepted, body kept.
+            deep = Path(d) / "deep.docx"
+            self.doc.strip_office(src, deep, deep=True)
+            with zipfile.ZipFile(deep) as z:
+                doc = z.read("word/document.xml")
+                self.assertIn(b"Kept.", doc)
+                self.assertIn(b"INS_KEEP", doc)      # insertion accepted
+                self.assertNotIn(b"<w:ins", doc)
+                self.assertNotIn(b"DEL_SECRET", doc)  # deletion dropped
+                self.assertNotIn(b"commentReference", doc)
+                self.assertNotIn(b"w:rsid", doc)
+                self.assertNotIn(b"SECRET_NOTE", z.read("word/comments.xml"))
+
+
 class ProvenanceScanTests(unittest.TestCase):
     def setUp(self):
         self.scan = load("provenance-scan/scripts/provenance_scan.py")

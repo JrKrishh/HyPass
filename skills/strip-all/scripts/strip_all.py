@@ -55,9 +55,10 @@ def iter_files(args):
 
 def main(argv):
     check_only = "--check" in argv or "-c" in argv
-    args = [a for a in argv if a not in ("--check", "-c")]
+    deep = "--deep" in argv
+    args = [a for a in argv if a not in ("--check", "-c", "--deep")]
     if not args:
-        print("usage: strip_all.py [--check] <path> [path ...]")
+        print("usage: strip_all.py [--check] [--deep] <path> [path ...]")
         return 1
     routed = 0
     for path in iter_files(args):
@@ -70,6 +71,8 @@ def main(argv):
         cmd = [sys.executable, str(script)]
         if check_only:
             cmd.append("--check")
+        if deep and script == DOC_STRIPPER:  # only the document stripper supports --deep
+            cmd.append("--deep")
         cmd.append(str(path))
         routed += 1
         subprocess.run(cmd)
