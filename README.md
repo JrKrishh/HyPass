@@ -34,6 +34,15 @@ Guidance (no script) for the invisible SynthID-style watermark Claude weaves int
 
 Keeps commits and PRs attributed only to the GitHub account holder: no `Co-Authored-By: Claude` trailers, no "🤖 Generated with Claude Code" footer, no Claude-Session link, and human-style commit/PR text. Includes flag-and-verify commands for auditing history.
 
+## Scan vs strip
+
+Two different operations, easy to confuse:
+
+- **Strip** (`image-watermark-stripper`, `document-metadata-stripper`, `media-metadata-stripper`, `strip-all`) **removes** metadata — and it clears the fields regardless of what's in them. Stripping a document empties author, company, application, timestamps, and custom properties whether or not they mention Claude; the document body is left untouched.
+- **Scan** (`provenance-scan`, and the `--check` flag on the strippers) only **reports** — it looks specifically for AI *provenance* markers (C2PA, JUMBF, Claude, Anthropic) and writes nothing.
+
+So a scan reporting "no markers" means no Claude/C2PA provenance was found — not that the file has no metadata. A strip still clears that metadata. Use scan to audit before publishing; use strip to actually clean.
+
 ## Install
 
 ### One step, in Claude Code (recommended)
