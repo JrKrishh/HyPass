@@ -1,0 +1,9 @@
+{
+  "name": "hypass",
+  "description": "Strip AI provenance metadata from your files: clean images, documents, PDFs, and media, audit files for provenance, and keep git commits human-owned.",
+  "version": "1.0.0",
+  "author": {
+    "name": "JrKrishh"
+  },
+  "license": "MIT"
+}

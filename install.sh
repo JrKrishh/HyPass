@@ -6,9 +6,9 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dest="$HOME/.claude/skills"
 mkdir -p "$dest"
 
-for dir in "$root"/*/; do
+for dir in "$root"/skills/*/; do
     name="$(basename "$dir")"
-    # Only install skill directories (those with a SKILL.md); skip tests, .git, etc.
+    # Only install skill directories (those with a SKILL.md).
     [ -f "$dir/SKILL.md" ] || continue
     rm -rf "${dest:?}/$name"
     cp -R "$dir" "$dest/$name"

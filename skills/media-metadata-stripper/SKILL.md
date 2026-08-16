@@ -22,17 +22,17 @@ Requires ffmpeg and ffprobe on PATH (`https://ffmpeg.org`, or `brew install ffmp
 
 Strip (writes `<name>_clean.<ext>` next to the original):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\media-metadata-stripper\scripts\strip_media_metadata.py" "path\to\clip.mp4"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/media-metadata-stripper/scripts/strip_media_metadata.py" "path/to/clip.mp4"
 ```
 
 Check only (reads tags with ffprobe, writes nothing):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\media-metadata-stripper\scripts\strip_media_metadata.py" --check "path\to\clip.mp4"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/media-metadata-stripper/scripts/strip_media_metadata.py" --check "path/to/clip.mp4"
 ```
 
-macOS/Linux: `python ~/.claude/skills/media-metadata-stripper/scripts/strip_media_metadata.py <file>`.
+`${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
 ## What it does
 

@@ -1,0 +1,13 @@
+{
+  "name": "hypass",
+  "owner": {
+    "name": "JrKrishh"
+  },
+  "plugins": [
+    {
+      "name": "hypass",
+      "source": ".",
+      "description": "Strip AI provenance metadata from your files."
+    }
+  ]
+}

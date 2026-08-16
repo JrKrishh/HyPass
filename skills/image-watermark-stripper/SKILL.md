@@ -20,17 +20,17 @@ Requires Python 3 with Pillow: `pip install Pillow` (or `pip install -r requirem
 
 Strip (writes `<name>_clean.<ext>` next to the original):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\image-watermark-stripper\scripts\strip_metadata.py" "path\to\image.png"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/image-watermark-stripper/scripts/strip_metadata.py" "path/to/image.png"
 ```
 
 Check only (scans and reports, writes nothing):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\image-watermark-stripper\scripts\strip_metadata.py" --check "path\to\image.png"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/image-watermark-stripper/scripts/strip_metadata.py" --check "path/to/image.png"
 ```
 
-macOS/Linux: `python ~/.claude/skills/image-watermark-stripper/scripts/strip_metadata.py <image>`.
+`${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
 The script prints the provenance markers found before and after. The scan is a token heuristic covering C2PA/JUMBF/XMP and Claude/Anthropic markers; EXIF and IPTC are stripped but not individually reported by the scan.
 

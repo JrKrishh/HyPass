@@ -18,17 +18,17 @@ Dispatcher over the other stripper skills. Point it at files or folders; it dete
 
 Requires Python 3. Depends on the other stripper skills being installed alongside it (they are, if you ran the installer). Each underlying stripper has its own dependencies: Pillow for images, pikepdf for PDFs, ffmpeg for audio/video.
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\strip-all\scripts\strip_all.py" "path\to\folder"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/strip-all/scripts/strip_all.py" "path/to/folder"
 ```
 
 Check only (report via each stripper's `--check`, write nothing):
 
-```powershell
-python "$env:USERPROFILE\.claude\skills\strip-all\scripts\strip_all.py" --check "path\to\folder"
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/strip-all/scripts/strip_all.py" --check "path/to/folder"
 ```
 
-macOS/Linux: `python ~/.claude/skills/strip-all/scripts/strip_all.py <path>`.
+`${CLAUDE_PLUGIN_ROOT}` is set automatically for plugin installs; for a manual `~/.claude/skills` install, use that path instead.
 
 ## What it does
 
