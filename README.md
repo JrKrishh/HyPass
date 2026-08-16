@@ -12,7 +12,7 @@ Strips AI provenance metadata (C2PA content credentials, EXIF, XMP, IPTC, PNG te
 
 ### document-metadata-stripper
 
-Strips authoring/provenance metadata (creator, company, application, custom properties, "Made with Claude"/Anthropic tags) from Office documents (`.docx`/`.pptx`/`.xlsx` and their macro/template variants) and PDFs, without touching the document body. Office formats run on the Python standard library; PDF support needs `pikepdf` or `pypdf`. Supports a `--check` scan-only mode, and a `--deep` mode that also removes hidden content — Word tracked changes, comments, and revision IDs; PDF annotations, attachments, JavaScript, and prior revision history.
+Strips authoring/provenance metadata (creator, company, application, custom properties, "Made with Claude"/Anthropic tags) from Office documents (`.docx`/`.pptx`/`.xlsx` and their macro/template variants) and PDFs, without touching the document body. Office formats run on the Python standard library; PDF support needs `pikepdf` or `pypdf`. Supports a `--check` scan-only mode, and a `--deep` mode that also removes hidden content — Word tracked changes, comments, revision IDs, hidden text, and embedded OLE objects; PDF annotations, attachments, JavaScript, and prior revision history.
 
 ### media-metadata-stripper
 

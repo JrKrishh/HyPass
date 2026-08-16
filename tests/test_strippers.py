@@ -110,6 +110,52 @@ class DeepCleanTests(unittest.TestCase):
                 self.assertNotIn(b"SECRET_NOTE", z.read("word/comments.xml"))
 
 
+def make_docx_with_hidden_and_ole(path):
+    W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    document = (
+        '<?xml version="1.0"?>'
+        f'<w:document xmlns:w="{W}"><w:body><w:p>'
+        '<w:r><w:t>Visible.</w:t></w:r>'
+        '<w:r><w:rPr><w:vanish/></w:rPr><w:t>HIDDEN_SECRET</w:t></w:r>'
+        '<w:r><w:rPr><w:vanish w:val="false"/></w:rPr><w:t>NOT_HIDDEN</w:t></w:r>'
+        '<w:r><w:object><o:OLEObject r:id="rId5" xmlns:o="urn:o" xmlns:r="urn:r"/></w:object></w:r>'
+        '</w:p></w:body></w:document>'
+    ).encode()
+    rels = (
+        b'<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        b'<Relationship Id="rId5" Type="urn:oleObject" Target="embeddings/oleObject1.bin"/>'
+        b'<Relationship Id="rId1" Type="urn:settings" Target="settings.xml"/></Relationships>'
+    )
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", b"<Types/>")
+        z.writestr("word/document.xml", document)
+        z.writestr("word/_rels/document.xml.rels", rels)
+        z.writestr("word/embeddings/oleObject1.bin", b"OLE_PAYLOAD_SECRET")
+
+
+class DeepHiddenOleTests(unittest.TestCase):
+    def setUp(self):
+        self.doc = load("document-metadata-stripper/scripts/strip_document_metadata.py")
+
+    def test_deep_removes_hidden_text_and_ole(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "o.docx"
+            make_docx_with_hidden_and_ole(src)
+            out = Path(d) / "o_clean.docx"
+            self.doc.strip_office(src, out, deep=True)
+            with zipfile.ZipFile(out) as z:
+                doc = z.read("word/document.xml")
+                rels = z.read("word/_rels/document.xml.rels")
+                self.assertIn(b"Visible.", doc)
+                self.assertNotIn(b"HIDDEN_SECRET", doc)     # hidden run dropped
+                self.assertIn(b"NOT_HIDDEN", doc)           # w:val="false" kept
+                self.assertNotIn(b"<w:object", doc)          # OLE reference removed
+                self.assertNotIn("word/embeddings/oleObject1.bin", z.namelist())
+                self.assertNotIn(b"embeddings/oleObject1.bin", rels)
+                self.assertIn(b"settings.xml", rels)         # other rels intact
+
+
 class ProvenanceScanTests(unittest.TestCase):
     def setUp(self):
         self.scan = load("provenance-scan/scripts/provenance_scan.py")
