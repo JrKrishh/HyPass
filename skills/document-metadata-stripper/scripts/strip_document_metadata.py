@@ -61,6 +61,21 @@ CHANGE_EMPTY_RE = re.compile(rb"<w:(?:" + _CHANGE_TAGS.encode() + rb")\b[^>]*/>"
 COMMENT_REF_RE = re.compile(
     rb"<w:commentRangeStart\b[^>]*/>|<w:commentRangeEnd\b[^>]*/>|<w:commentReference\b[^>]*/>"
 )
+# Hidden text: a run whose properties carry an active <w:vanish/> (not w:val="false").
+RUN_RE = re.compile(rb"<w:r\b[^>]*>.*?</w:r>", re.S)
+ACTIVE_VANISH_RE = re.compile(rb'<w:vanish(?:\s+w:val="(?:true|1|on)")?\s*/>')
+# Embedded OLE objects: the <w:object> reference in document.xml, the embedding
+# parts, and their relationship entries.
+OBJECT_RE = re.compile(rb"<w:object\b.*?</w:object>", re.S)
+EMBED_REL_RE = re.compile(rb'<Relationship\b[^>]*Target="[^"]*embeddings/[^"]*"[^>]*/>')
+EMBED_PART_PREFIX = "word/embeddings/"
+
+
+def _drop_hidden_runs(data):
+    def repl(m):
+        run = m.group(0)
+        return b"" if ACTIVE_VANISH_RE.search(run) else run
+    return RUN_RE.sub(repl, data)
 # Comment/author side-parts to empty out (keeps the part valid; drops the content).
 COMMENT_PARTS = (
     "word/comments.xml", "word/commentsExtended.xml",
@@ -86,6 +101,8 @@ def deep_clean_document_xml(data):
     data = CHANGE_RE.sub(b"", data)
     data = CHANGE_EMPTY_RE.sub(b"", data)
     data = COMMENT_REF_RE.sub(b"", data)
+    data = OBJECT_RE.sub(b"", data)      # embedded OLE object references
+    data = _drop_hidden_runs(data)       # hidden text runs
     data = RSID_ATTR_RE.sub(b"", data)
     return data
 
@@ -101,6 +118,8 @@ def _deep_transform(name, data):
         return deep_clean_document_xml(data)
     if name == "word/settings.xml":
         return deep_clean_settings_xml(data)
+    if name == "word/_rels/document.xml.rels":
+        return EMBED_REL_RE.sub(b"", data)  # drop rels to removed OLE parts
     if name == "word/people.xml":
         return EMPTY_PEOPLE
     if name in COMMENT_PARTS:
@@ -144,6 +163,8 @@ def strip_office(src, out, deep=False):
         with zipfile.ZipFile(out, "w") as zout:
             for info in infos:
                 name = info.filename
+                if deep and name.startswith(EMBED_PART_PREFIX):
+                    continue  # drop embedded OLE object parts entirely
                 data = zin.read(name)
                 if name in OOXML_META_PARTS:
                     data = _transform_meta_part(name, data)

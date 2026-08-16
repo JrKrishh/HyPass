@@ -20,7 +20,7 @@ Catalog of skills in this repository. Each skill lives under `skills/<name>/` wi
 - **Description:** Strip authoring/provenance metadata from Office documents and PDFs, or check whether a document carries it.
 - **Entry point:** `scripts/strip_document_metadata.py [--check] [--deep] <file>` — writes `<name>_clean.<ext>` (or scans only with `--check`).
 - **Formats:** `.docx/.docm/.dotx/.dotm`, `.xlsx/.xlsm/.xltx/.xltm`, `.pptx/.pptm/.potx/.potm` via stdlib; `.pdf` via pikepdf or pypdf.
-- **Deep clean:** `--deep` also removes tracked changes, comments, and RSIDs (Word), or annotations, attachments, JavaScript, and revision history (PDF).
+- **Deep clean:** `--deep` also removes tracked changes, comments, RSIDs, hidden text, and embedded OLE objects (Word), or annotations, attachments, JavaScript, and revision history (PDF).
 
 ### git-human-commits
 - **Directory:** `skills/git-human-commits/`
