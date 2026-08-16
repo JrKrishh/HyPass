@@ -14,9 +14,17 @@ Strips AI provenance metadata (C2PA content credentials, EXIF, XMP, IPTC, PNG te
 
 Strips authoring/provenance metadata (creator, company, application, custom properties, "Made with Claude"/Anthropic tags) from Office documents (`.docx`/`.pptx`/`.xlsx` and their macro/template variants) and PDFs, without touching the document body. Office formats run on the Python standard library; PDF support needs `pikepdf` or `pypdf`. Supports a `--check` scan-only mode.
 
+### media-metadata-stripper
+
+Strips container and stream metadata from audio/video (`.mp3`/`.mp4`/`.mov`/`.wav` and more) by remuxing with ffmpeg - streams are copied, so there's no re-encode or quality loss, only tags dropped. Needs ffmpeg on PATH. Supports a `--check` scan-only mode.
+
+### strip-all
+
+Dispatcher: point it at a folder or a mixed set of files and it auto-detects each file's type and runs the matching stripper (image, document, or media). The write-side companion to `provenance-scan`. Reuses the other skills as subprocesses, so there's a single source of truth per format.
+
 ### provenance-scan
 
-Read-only auditor. Walks files and folders and reports which images, documents, and PDFs carry Claude/C2PA provenance markers, without modifying anything. Exit code `1` if any file is flagged, so it works as a pre-publish or CI gate. Standard library only. This is the detect side to the strippers' remove side.
+Read-only auditor. Walks files and folders and reports which images, documents, and PDFs carry Claude/C2PA provenance markers, without modifying anything. Exit code `1` if any file is flagged, so it works as a pre-publish or CI gate; `--json` gives machine-readable output, and `hooks/pre-commit` blocks committing flagged files. Standard library only. This is the detect side to the strippers' remove side.
 
 ### text-watermark
 
