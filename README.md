@@ -1,4 +1,4 @@
-# claude-skills
+# HyPass
 
 Personal Claude Code skills for clean, human-owned output.
 
@@ -39,15 +39,15 @@ Keeps commits and PRs attributed only to the GitHub account holder: no `Co-Autho
 Windows (PowerShell):
 
 ```powershell
-git clone https://github.com/JrKrishh/claude-skills.git "$env:TEMP\claude-skills"
-powershell -ExecutionPolicy Bypass -File "$env:TEMP\claude-skills\install.ps1"
+git clone https://github.com/JrKrishh/HyPass.git "$env:TEMP\HyPass"
+powershell -ExecutionPolicy Bypass -File "$env:TEMP\HyPass\install.ps1"
 ```
 
 macOS/Linux:
 
 ```bash
-git clone https://github.com/JrKrishh/claude-skills.git /tmp/claude-skills
-bash /tmp/claude-skills/install.sh
+git clone https://github.com/JrKrishh/HyPass.git /tmp/HyPass
+bash /tmp/HyPass/install.sh
 ```
 
 The installer copies every skill directory into `~/.claude/skills/`. Restart Claude Code to load them. The stripper scripts need Python 3; install their dependencies with `pip install -r requirements.txt` (Pillow for images, pikepdf for PDFs).
