@@ -4,9 +4,15 @@ Personal Claude Code skills for clean, human-owned output.
 
 ## Skills
 
+See [INDEX.md](INDEX.md) for the full catalog with per-skill details.
+
 ### image-watermark-stripper
 
 Strips AI provenance metadata (C2PA content credentials, EXIF, XMP, IPTC, PNG text chunks, SVG metadata) from image files. Claude marks `.png`/`.jpg`/`.svg` with signed C2PA credentials (Anthropic, Aug 2026 - EU AI Act). Runs `strip_metadata.py`, writes `<name>_clean.<ext>`, and reports provenance markers found before/after.
+
+### document-metadata-stripper
+
+Strips authoring/provenance metadata (creator, company, application, custom properties, "Made with Claude"/Anthropic tags) from Office documents (`.docx`/`.pptx`/`.xlsx` and their macro/template variants) and PDFs, without touching the document body. Office formats run on the Python standard library; PDF support needs `pikepdf` or `pypdf`. Supports a `--check` scan-only mode.
 
 ### git-human-commits
 
