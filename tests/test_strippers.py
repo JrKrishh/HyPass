@@ -73,6 +73,36 @@ class ProvenanceScanTests(unittest.TestCase):
             self.assertEqual(rc, 0)
 
 
+class ProvenanceScanJsonTests(unittest.TestCase):
+    def test_json_output_shape(self):
+        import io
+        import json
+        import tempfile
+        from contextlib import redirect_stdout
+        scan = load("provenance-scan/scripts/provenance_scan.py")
+        with tempfile.TemporaryDirectory() as d:
+            make_docx(Path(d) / "s.docx")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = scan.main(["--json", d])
+            self.assertEqual(rc, 1)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["flagged"], 1)
+            self.assertTrue(payload["files"][0]["flagged"])
+            self.assertIn("Claude", payload["files"][0]["markers"])
+
+
+class StripAllTests(unittest.TestCase):
+    def test_dispatches_office_to_document_stripper(self):
+        import tempfile
+        strip_all = load("strip-all/scripts/strip_all.py")
+        with tempfile.TemporaryDirectory() as d:
+            make_docx(Path(d) / "s.docx")
+            rc = strip_all.main([d])
+            self.assertEqual(rc, 0)
+            self.assertTrue((Path(d) / "s_clean.docx").is_file())  # routed + cleaned
+
+
 class ImageStripperTests(unittest.TestCase):
     def test_png_text_chunk_removed(self):
         try:
